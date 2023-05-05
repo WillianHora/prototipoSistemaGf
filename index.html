@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Produzindo...</title>
+    </head>
+    <style>
+        p{
+            margin-bottom: 5px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #69be28;
+            font-weight: 700;
+        }
+        button{
+           color: #000000;
+           background-color: #69be28;
+           border: none;
+           border-radius: 10px;
+           padding: 10px;
+           display: flex;
+           margin-top: 20px;
+           font-weight: 700;
+           
+           
+        }
+        button:hover{
+           color: #000000;
+           background-color: #79ff12;
+           border: none;
+           border-radius: 10px;
+           padding: 10px;
+           display: flex;
+           margin-top: 20px;
+           box-shadow: 0 0 10px #4CAF50;
+           font-weight: 700;
+           cursor: pointer ;
+           
+        }
+        body{
+            background-image: url(background.png);
+            
+        }
+        input{
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            outline: none;
+            caret-color: #69be28;
+           
+        }
+      select{
+        border: none;
+        border-radius: 30px;
+        width: 150px;
+        height: 30px;
+        font-size: medium;
+        padding: 0px 0px 0px 8px;
+      }
+      #arquivo{
+        font-family: arial; 
+        background-color: #69be28; 
+        margin-top:20px;
+        cursor: pointer;
+
+      }
+      #arquivo:hover{
+        font-family: arial; 
+        background-color: #79ff12; 
+        margin-top:20px;
+        box-shadow: 0 0 10px #4CAF50;
+      }
+
+      div > p{
+        color: aliceblue;
+        font-size: larger;
+      }
+      div {
+      margin-top: 10px;
+      background-color: #414141;
+      width: 250px;
+      border-radius: 20px;
+      padding: 15px;
+    
+    }
+    h2{
+        color: white;
+        font-family: arial;
+        margin-bottom: -2px;
+    }
+    h1{
+        color: white;
+        font-family: arial;
+        margin-bottom: -8px;
+    }
+   #nome{
+    width: 260px;
+    }
+ 
+   select{
+    outline: none;
+   }
+    </style>
+    <body>
+        <h1>Salvar dados:</h1>
+        <p>Nome:</p>
+        <input placeholder="Nome completo" id="nome"><br>
+        <p>Forma de pagamento:</p>
+        <select id="pagamento">
+            <option selected disabled >---Selecione---</option>
+            <option value="Pix">Pix</option>
+            <option value="Cartão">Cartão</option>
+            <option value="Dinheiro">Dinheiro</option>
+        </select>
+        <p>Valor:</p>
+        <input min="1" type="number" placeholder="Valor total pago" id="valor"><br>
+        <button style="display: inline;" onclick="salvar()">SALVAR PAGAMENTO</button>
+        <button style="display: inline;" onclick="LimparCampos()">LIMPAR</button>
+        <h2>Leitor de dados:</h2>
+        <input id="arquivo" type="file" accept=".json"
+            onchange="showFile(this)">
+
+
+        <div hidden class="div">
+            <p style="display: inline; ">Cliente:</p>
+            <p style="display: inline; color: #19be28;" id="nomeResult"></p>
+            <br>
+            <p style="display: inline;">Tipo do Pagamento:</p>
+            <p style="display: inline; color: #19be28;" id="pagamentoResult"></p><br>
+            <p style="display: inline; ">Total:</p>
+            <p style="display: inline; color: #19be28;" id="valorResult"></p>
+        </div>
+
+        <div hidden class="div">
+            <p style="display: inline;">Data:</p>
+            <p style="display: inline; color: #19be28;" id="data"></p><br>
+            <p style="display: inline;">Horário:</p>
+            <p style="display: inline; color: #19be28;" id="hora"></p></div>
+        <script>
+          
+          
+          function showFile(input) {
+            let file = input.files[0];
+            let fileReader = new FileReader();
+            document.getElementsByClassName("div")[0].removeAttribute("hidden")
+            document.getElementsByClassName("div")[1].removeAttribute("hidden")
+        fileReader.onload = function(dadosArquivo) {
+              let dados = JSON.parse(dadosArquivo.target.result);
+              document.getElementById("nomeResult").innerText = dados.nome;
+              document.getElementById("pagamentoResult").innerText = dados.pagamento;
+              document.getElementById("valorResult").innerText= "R$"+dados.valor+",00";
+              document.getElementById("hora").innerText= dados.hora;
+              document.getElementById("data").innerText= dados.data;
+              
+            }
+            fileReader.readAsText(file); 
+          }
+
+      
+          function LimparCampos(){
+            document.getElementById("nome").value = ""
+            document.getElementById("pagamento").selectedIndex = 0
+            document.getElementById("valor").value =""
+          }
+
+
+          function salvar(){
+            let agora = new Date();
+            let dia = agora.getDay();
+            let mes = agora.getMonth();
+            let ano= agora.getFullYear();
+            let hora = agora.getHours();
+            let minuto = agora.getMinutes();
+            let segundo = agora.getSeconds();
+            let templink = document.createElement("a");
+            let dadosSalvar = {
+                "nome":document.getElementById("nome").value,
+                "pagamento":document.getElementById("pagamento").value,
+                "valor":document.getElementById("valor").value,
+                "hora":hora+":"+minuto+":"+segundo,
+                "data":dia+"/"+mes+"/"+ano
+                
+            }
+            let meuArquivo = new Blob([JSON.stringify(dadosSalvar)],{type:"text/plain"})
+            templink.setAttribute("href",URL.createObjectURL(meuArquivo))
+            let nameFile = document.getElementById("nome").value
+            templink.setAttribute("download",nameFile+".json");
+            templink.click();
+            document.getElementById("nome").value = ""
+            document.getElementById("pagamento").selectedIndex = 0
+            document.getElementById("valor").value =""
+
+          }
+      
+       </script>
+    </body>
+</html>
